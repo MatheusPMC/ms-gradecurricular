@@ -15,63 +15,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.matheus.cliente.escola.gradecurricular.entity.MateriaEntity;
-import com.matheus.cliente.escola.gradecurricular.repository.IMateriaRepository;
+import com.matheus.cliente.escola.gradecurricular.service.IMateriaService;
 
 @RestController
 @RequestMapping("/materia")
 public class MateriaController {
-
+	
 	@Autowired
-	private IMateriaRepository materiaRepository;
+	private IMateriaService materiaService;
 	
 	@GetMapping
 	public ResponseEntity<List<MateriaEntity>> listarMaterias() {
-		return ResponseEntity.status(HttpStatus.OK).body(materiaRepository.findAll());
+		return ResponseEntity.status(HttpStatus.OK).body(this.materiaService.listar());
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<MateriaEntity> consultaMaterias(@PathVariable Long id) {
-		return ResponseEntity.status(HttpStatus.OK).body(materiaRepository.findById(id).get());
+		return ResponseEntity.status(HttpStatus.OK).body(this.materiaService.consultar(id));
 	}
 	
 	@PostMapping
 	public ResponseEntity<Boolean> cadastrarMaterias(@RequestBody MateriaEntity materia) {
-		try {
-			this.materiaRepository.save(materia);
-			return ResponseEntity.status(HttpStatus.OK).body(true);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.OK).body(false);
-		}
+		return ResponseEntity.status(HttpStatus.OK).body(this.materiaService.cadastrar(materia));
 	}
 	
 	@PutMapping
 	public ResponseEntity<Boolean> atualizarMateria(@RequestBody MateriaEntity materia) {
-		try {
-			MateriaEntity materiaEntityAtualizada = this.materiaRepository.findById(materia.getId()).get();
-			
-			materiaEntityAtualizada.setNome(materia.getNome());
-			materiaEntityAtualizada.setCodigo(materia.getCodigo());
-			materiaEntityAtualizada.setHoras(materia.getHoras());
-			materiaEntityAtualizada.setNome(materia.getNome());
-			materiaEntityAtualizada.setFrequencia(materia.getFrequencia());
-			
-			this.materiaRepository.save(materiaEntityAtualizada);
-			
-			return ResponseEntity.status(HttpStatus.OK).body(true);
-			
-		}catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
-		}
+		return ResponseEntity.status(HttpStatus.OK).body(this.materiaService.atualizar(materia));
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Boolean> excluirMateria(@PathVariable Long id) {
-		try {
-			this.materiaRepository.deleteById(id);
-			return ResponseEntity.status(HttpStatus.OK).body(true);
-			
-		}catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
-		}
+		return ResponseEntity.status(HttpStatus.OK).body(this.materiaService.excluir(id));
 	}
 }
